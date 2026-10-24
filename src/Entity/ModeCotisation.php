@@ -4,18 +4,13 @@ namespace App\Entity;
 
 use App\Repository\ModeCotisationRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * Table d'association entre une campagne et un membre (participation).
+ * Table d'association entre une campagne et un membre.
  * isLibre = false : le membre cotise le montant fixe de la campagne.
  * isLibre = true  : le membre cotise librement, le montant est saisi à chaque séance.
  */
 #[ORM\Entity(repositoryClass: ModeCotisationRepository::class)]
-#[ORM\UniqueConstraint(name: 'uniq_campagne_user', columns: ['campagne_id', 'user_id'])]
-#[UniqueEntity(fields: ['campagne', 'user'], message: 'Ce membre participe déjà à cette campagne.')]
 class ModeCotisation
 {
     #[ORM\Id]
@@ -73,18 +68,5 @@ class ModeCotisation
         $this->user = $user;
 
         return $this;
-    }
-
-    /**
-     * Dans une épargne, tout le monde cotise le montant fixe : isLibre doit rester false.
-     */
-    #[Assert\Callback]
-    public function validateLibre(ExecutionContextInterface $context): void
-    {
-        if ($this->isLibre && $this->campagne instanceof Epargne) {
-            $context->buildViolation('Une épargne a un montant fixe : le mode libre est réservé aux tontines.')
-                ->atPath('isLibre')
-                ->addViolation();
-        }
     }
 }
