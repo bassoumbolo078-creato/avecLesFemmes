@@ -22,7 +22,7 @@ class BoloThiernoMakeEntityCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $arguments = [];
+                $arguments = ['command' => 'make:entity'];
         if (null !== $input->getArgument('name')) {
             $arguments['name'] = $input->getArgument('name');
         }
