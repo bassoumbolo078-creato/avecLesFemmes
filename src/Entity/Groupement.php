@@ -23,10 +23,16 @@ class Groupement
      */
     #[ORM\OneToMany(targetEntity: Campagne::class, mappedBy: 'groupement')]
     private Collection $campagnes;
+        /**
+     * @var Collection<int, User>
+     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'groupement')]
+    private Collection $utilisateurs;
 
     public function __construct()
     {
         $this->campagnes = new ArrayCollection();
+        $this->utilisateurs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,6 +75,34 @@ class Groupement
         if ($this->campagnes->removeElement($campagne)) {
             if ($campagne->getGroupement() === $this) {
                 $campagne->setGroupement(null);
+            }
+        }
+
+        return $this;
+    }
+        /**
+     * @return Collection<int, User>
+     */
+    public function getUtilisateurs(): Collection
+    {
+        return $this->utilisateurs;
+    }
+
+    public function addUtilisateur(User $utilisateur): static
+    {
+        if (!$this->utilisateurs->contains($utilisateur)) {
+            $this->utilisateurs->add($utilisateur);
+            $utilisateur->setGroupement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUtilisateur(User $utilisateur): static
+    {
+        if ($this->utilisateurs->removeElement($utilisateur)) {
+            if ($utilisateur->getGroupement() === $this) {
+                $utilisateur->setGroupement(null);
             }
         }
 
