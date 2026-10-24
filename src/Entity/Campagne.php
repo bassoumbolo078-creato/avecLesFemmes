@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\CampagneRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CampagneRepository::class)]
 #[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
     'epargne' => Epargne::class,
     'tontine' => Tontine::class,
@@ -20,82 +22,99 @@ abstract class Campagne
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $NomComplet = null;
+    private ?string $nom = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $dateDebut = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateFin = null;
 
     #[ORM\Column]
-    private ?int $Montant = null;
+    private ?float $montant = null;
 
     #[ORM\Column]
-    private ?\DateTime $dateDebut = null;
-
-    #[ORM\Column]
-    private ?\DateTime $createdAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updatedAt = null;
+    private ?\DateTimeInterface $updatedAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function touchUpdatedAt(): void
+    {
+        $this->updatedAt = new \DateTime();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNomComplet(): ?string
+    public function getNom(): ?string
     {
-        return $this->NomComplet;
+        return $this->nom;
     }
 
-    public function setNomComplet(string $NomComplet): static
+    public function setNom(string $nom): static
     {
-        $this->NomComplet = $NomComplet;
+        $this->nom = $nom;
 
         return $this;
     }
 
-    public function getMontant(): ?int
-    {
-        return $this->Montant;
-    }
-
-    public function setMontant(int $Montant): static
-    {
-        $this->Montant = $Montant;
-
-        return $this;
-    }
-
-    public function getDateDebut(): ?\DateTime
+    public function getDateDebut(): ?\DateTimeInterface
     {
         return $this->dateDebut;
     }
 
-    public function setDateDebut(\DateTime $dateDebut): static
+    public function setDateDebut(\DateTimeInterface $dateDebut): static
     {
         $this->dateDebut = $dateDebut;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getDateFin(): ?\DateTimeInterface
+    {
+        return $this->dateFin;
+    }
+
+    public function setDateFin(?\DateTimeInterface $dateFin): static
+    {
+        $this->dateFin = $dateFin;
+
+        return $this;
+    }
+
+    public function getMontant(): ?float
+    {
+        return $this->montant;
+    }
+
+    public function setMontant(float $montant): static
+    {
+        $this->montant = $montant;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updatedAt): static
+    public function __toString(): string
     {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
+        return (string) $this->nom;
     }
 }
