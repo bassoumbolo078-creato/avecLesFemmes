@@ -51,7 +51,8 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'utilisateurs')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Groupement $groupement = null;
-
+    #[ORM\ManyToOne]
+    private ?Role $role = null;
     public function getId(): ?int
     {
         return $this->id;
@@ -125,6 +126,17 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setGroupement(?Groupement $groupement): static
     {
         $this->groupement = $groupement;
+
+        return $this;
+    }
+        public function getRole(): ?Role
+    {
+        return $this->role;
+    }
+
+    public function setRole(?Role $role): static
+    {
+        $this->role = $role;
 
         return $this;
     }
