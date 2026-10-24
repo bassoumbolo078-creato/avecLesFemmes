@@ -36,9 +36,8 @@ abstract class Campagne
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
-
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
