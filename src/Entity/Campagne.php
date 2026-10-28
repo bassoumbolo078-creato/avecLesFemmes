@@ -2,20 +2,18 @@
 
 namespace App\Entity;
 
+use App\Enum\Periodicite;
 use App\Repository\CampagneRepository;
+use App\Trait\DateTimeTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CampagneRepository::class)]
-#[ORM\InheritanceType('JOINED')]
-#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
-#[ORM\DiscriminatorMap([
-    'epargne' => Epargne::class,
-    'tontine' => Tontine::class,
-])]
 #[ORM\HasLifecycleCallbacks]
-abstract class Campagne
+class Campagne
 {
+    use DateTimeTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,32 +23,41 @@ abstract class Campagne
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $dateDebut = null;
+    private ?\DateTime $dateDebutAt = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateFin = null;
+    private ?\DateTime $dateFinAt = null;
 
+    /** Montant fixe de la cotisation par séance (en FCFA). */
     #[ORM\Column]
-    private ?float $montant = null;
+    private ?int $montant = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[ORM\Column(enumType: Periodicite::class, nullable: true)]
+    private ?Periodicite $periodicite = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
-        #[ORM\ManyToOne(inversedBy: 'campagnes')]
+    /** Jour de rencontre (ex. : « dimanche », ou le jour du mois). */
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $jourRencontre = null;
+
+    /** Cotisation de caisse sociale d'un membre présent à la séance. */
+    #[ORM\Column(options: ['default' => 0])]
+    private int $caissePresent = 0;
+
+    /** Cotisation de caisse sociale d'un membre absent mais représenté. */
+    #[ORM\Column(options: ['default' => 0])]
+    private int $caisseAbsent = 0;
+
+    /** Amende par jour pour un membre absent qui n'a pas payé. */
+    #[ORM\Column(options: ['default' => 0])]
+    private int $amendeJournaliere = 0;
+
+    #[ORM\ManyToOne(inversedBy: 'campagnes')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Groupement $groupement = null;
-    public function __construct()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-    }
+    private ?TypeCampagne $typeCampagne = null;
 
-    #[ORM\PreUpdate]
-    public function touchUpdatedAt(): void
-    {
-        $this->updatedAt = new \DateTime();
-    }
+    #[ORM\ManyToOne(inversedBy: 'campagnes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Exercice $exercice = null;
 
     public function getId(): ?int
     {
@@ -69,64 +76,123 @@ abstract class Campagne
         return $this;
     }
 
-    public function getDateDebut(): ?\DateTimeInterface
+    public function getDateDebutAt(): ?\DateTime
     {
-        return $this->dateDebut;
+        return $this->dateDebutAt;
     }
 
-    public function setDateDebut(\DateTimeInterface $dateDebut): static
+    public function setDateDebutAt(\DateTime $dateDebutAt): static
     {
-        $this->dateDebut = $dateDebut;
+        $this->dateDebutAt = $dateDebutAt;
 
         return $this;
     }
 
-    public function getDateFin(): ?\DateTimeInterface
+    public function getDateFinAt(): ?\DateTime
     {
-        return $this->dateFin;
+        return $this->dateFinAt;
     }
 
-    public function setDateFin(?\DateTimeInterface $dateFin): static
+    public function setDateFinAt(?\DateTime $dateFinAt): static
     {
-        $this->dateFin = $dateFin;
+        $this->dateFinAt = $dateFinAt;
 
         return $this;
     }
 
-    public function getMontant(): ?float
+    public function getMontant(): ?int
     {
         return $this->montant;
     }
 
-    public function setMontant(float $montant): static
+    public function setMontant(int $montant): static
     {
         $this->montant = $montant;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getPeriodicite(): ?Periodicite
     {
-        return $this->createdAt;
+        return $this->periodicite;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function setPeriodicite(?Periodicite $periodicite): static
     {
-        return $this->updatedAt;
-    }
-    public function getGroupement(): ?Groupement
-    {
-        return $this->groupement;
-    }
-
-    public function setGroupement(?Groupement $groupement): static
-    {
-        $this->groupement = $groupement;
+        $this->periodicite = $periodicite;
 
         return $this;
     }
-    public function __toString(): string
+
+    public function getJourRencontre(): ?string
     {
-        return (string) $this->nom;
+        return $this->jourRencontre;
+    }
+
+    public function setJourRencontre(?string $jourRencontre): static
+    {
+        $this->jourRencontre = $jourRencontre;
+
+        return $this;
+    }
+
+    public function getCaissePresent(): int
+    {
+        return $this->caissePresent;
+    }
+
+    public function setCaissePresent(int $caissePresent): static
+    {
+        $this->caissePresent = $caissePresent;
+
+        return $this;
+    }
+
+    public function getCaisseAbsent(): int
+    {
+        return $this->caisseAbsent;
+    }
+
+    public function setCaisseAbsent(int $caisseAbsent): static
+    {
+        $this->caisseAbsent = $caisseAbsent;
+
+        return $this;
+    }
+
+    public function getAmendeJournaliere(): int
+    {
+        return $this->amendeJournaliere;
+    }
+
+    public function setAmendeJournaliere(int $amendeJournaliere): static
+    {
+        $this->amendeJournaliere = $amendeJournaliere;
+
+        return $this;
+    }
+
+    public function getTypeCampagne(): ?TypeCampagne
+    {
+        return $this->typeCampagne;
+    }
+
+    public function setTypeCampagne(?TypeCampagne $typeCampagne): static
+    {
+        $this->typeCampagne = $typeCampagne;
+
+        return $this;
+    }
+
+    public function getExercice(): ?Exercice
+    {
+        return $this->exercice;
+    }
+
+    public function setExercice(?Exercice $exercice): static
+    {
+        $this->exercice = $exercice;
+
+        return $this;
     }
 }
