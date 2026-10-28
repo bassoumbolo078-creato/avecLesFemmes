@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\MembreSimple;
+use App\Entity\TypeCampagne;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<MembreSimple>
+ * @extends ServiceEntityRepository<TypeCampagne>
  */
-class MembreSimpleRepository extends ServiceEntityRepository
+class TypeCampagneRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, MembreSimple::class);
+        parent::__construct($registry, TypeCampagne::class);
     }
 
 //    /**
-//     * @return MembreSimple[] Returns an array of MembreSimple objects
+//     * @return TypeCampagne[] Returns an array of TypeCampagne objects
 //     */
 //    public function findByExampleField($value): array
 //    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
+//        return $this->createQueryBuilder('t')
+//            ->andWhere('t.exampleField = :val')
 //            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
+//            ->orderBy('t.id', 'ASC')
 //            ->setMaxResults(10)
 //            ->getQuery()
 //            ->getResult()
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?MembreSimple
+//    public function findOneBySomeField($value): ?TypeCampagne
 //    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
+//        return $this->createQueryBuilder('t')
+//            ->andWhere('t.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->getQuery()
 //            ->getOneOrNullResult()

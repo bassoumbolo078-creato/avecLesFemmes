@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Epargne;
+use App\Entity\Exercice;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Epargne>
+ * @extends ServiceEntityRepository<Exercice>
  */
-class EpargneRepository extends ServiceEntityRepository
+class ExerciceRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Epargne::class);
+        parent::__construct($registry, Exercice::class);
     }
 
 //    /**
-//     * @return Epargne[] Returns an array of Epargne objects
+//     * @return Exercice[] Returns an array of Exercice objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -31,7 +31,7 @@ class EpargneRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Epargne
+//    public function findOneBySomeField($value): ?Exercice
 //    {
 //        return $this->createQueryBuilder('e')
 //            ->andWhere('e.exampleField = :val')

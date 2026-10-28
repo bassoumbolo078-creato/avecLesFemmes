@@ -3,13 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\GroupementRepository;
+use App\Trait\DateTimeTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupementRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Groupement
 {
+    use DateTimeTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -18,21 +22,28 @@ class Groupement
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
+    #[ORM\Column(length: 17)]
+    private ?string $tel = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $adresse = null;
+
     /**
-     * @var Collection<int, Campagne>
+     * @var Collection<int, Exercice>
      */
-    #[ORM\OneToMany(targetEntity: Campagne::class, mappedBy: 'groupement')]
-    private Collection $campagnes;
-        /**
-     * @var Collection<int, User>
+    #[ORM\OneToMany(targetEntity: Exercice::class, mappedBy: 'groupement', orphanRemoval: true)]
+    private Collection $exercices;
+
+    /**
+     * @var Collection<int, Membre>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'groupement')]
-    private Collection $utilisateurs;
+    #[ORM\OneToMany(targetEntity: Membre::class, mappedBy: 'groupement')]
+    private Collection $membres;
 
     public function __construct()
     {
-        $this->campagnes = new ArrayCollection();
-        $this->utilisateurs = new ArrayCollection();
+        $this->exercices = new ArrayCollection();
+        $this->membres = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,65 +63,85 @@ class Groupement
         return $this;
     }
 
+    public function getTel(): ?string
+    {
+        return $this->tel;
+    }
+
+    public function setTel(string $tel): static
+    {
+        $this->tel = $tel;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?string $adresse): static
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
     /**
-     * @return Collection<int, Campagne>
+     * @return Collection<int, Exercice>
      */
-    public function getCampagnes(): Collection
+    public function getExercices(): Collection
     {
-        return $this->campagnes;
+        return $this->exercices;
     }
 
-    public function addCampagne(Campagne $campagne): static
+    public function addExercice(Exercice $exercice): static
     {
-        if (!$this->campagnes->contains($campagne)) {
-            $this->campagnes->add($campagne);
-            $campagne->setGroupement($this);
+        if (!$this->exercices->contains($exercice)) {
+            $this->exercices->add($exercice);
+            $exercice->setGroupement($this);
         }
 
         return $this;
     }
 
-    public function removeCampagne(Campagne $campagne): static
+    public function removeExercice(Exercice $exercice): static
     {
-        if ($this->campagnes->removeElement($campagne)) {
-            if ($campagne->getGroupement() === $this) {
-                $campagne->setGroupement(null);
-            }
-        }
-
-        return $this;
-    }
-        /**
-     * @return Collection<int, User>
-     */
-    public function getUtilisateurs(): Collection
-    {
-        return $this->utilisateurs;
-    }
-
-    public function addUtilisateur(User $utilisateur): static
-    {
-        if (!$this->utilisateurs->contains($utilisateur)) {
-            $this->utilisateurs->add($utilisateur);
-            $utilisateur->setGroupement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUtilisateur(User $utilisateur): static
-    {
-        if ($this->utilisateurs->removeElement($utilisateur)) {
-            if ($utilisateur->getGroupement() === $this) {
-                $utilisateur->setGroupement(null);
+        if ($this->exercices->removeElement($exercice)) {
+            if ($exercice->getGroupement() === $this) {
+                $exercice->setGroupement(null);
             }
         }
 
         return $this;
     }
 
-    public function __toString(): string
+    /**
+     * @return Collection<int, Membre>
+     */
+    public function getMembres(): Collection
     {
-        return (string) $this->nom;
+        return $this->membres;
+    }
+
+    public function addMembre(Membre $membre): static
+    {
+        if (!$this->membres->contains($membre)) {
+            $this->membres->add($membre);
+            $membre->setGroupement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMembre(Membre $membre): static
+    {
+        if ($this->membres->removeElement($membre)) {
+            if ($membre->getGroupement() === $this) {
+                $membre->setGroupement(null);
+            }
+        }
+
+        return $this;
     }
 }

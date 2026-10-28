@@ -3,16 +3,20 @@
 namespace App\Entity;
 
 use App\Repository\ModeCotisationRepository;
+use App\Trait\DateTimeTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Table d'association entre une campagne et un membre.
- * isLibre = false : le membre cotise le montant fixe de la campagne.
- * isLibre = true  : le membre cotise librement, le montant est saisi à chaque séance.
+ * Table d'association entre une campagne et une membre.
+ * isLibre = false : la membre cotise le montant fixe de la campagne.
+ * isLibre = true  : la membre cotise librement, le montant est saisi à chaque séance.
  */
 #[ORM\Entity(repositoryClass: ModeCotisationRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class ModeCotisation
 {
+    use DateTimeTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -27,7 +31,7 @@ class ModeCotisation
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?Membre $membre = null;
 
     public function getId(): ?int
     {
@@ -58,14 +62,14 @@ class ModeCotisation
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getMembre(): ?Membre
     {
-        return $this->user;
+        return $this->membre;
     }
 
-    public function setUser(?User $user): static
+    public function setMembre(?Membre $membre): static
     {
-        $this->user = $user;
+        $this->membre = $membre;
 
         return $this;
     }
