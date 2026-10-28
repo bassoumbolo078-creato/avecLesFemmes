@@ -4,13 +4,12 @@ namespace App\Entity;
 
 use App\Repository\GroupementRepository;
 use App\Trait\DateTimeTrait;
-use DateTime;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupementRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Groupement
 {
     use DateTimeTrait;
@@ -35,10 +34,16 @@ class Groupement
     #[ORM\OneToMany(targetEntity: Exercice::class, mappedBy: 'groupement', orphanRemoval: true)]
     private Collection $exercices;
 
+    /**
+     * @var Collection<int, Membre>
+     */
+    #[ORM\OneToMany(targetEntity: Membre::class, mappedBy: 'groupement')]
+    private Collection $membres;
+
     public function __construct()
     {
         $this->exercices = new ArrayCollection();
-        $this->initDate();
+        $this->membres = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -103,9 +108,37 @@ class Groupement
     public function removeExercice(Exercice $exercice): static
     {
         if ($this->exercices->removeElement($exercice)) {
-            // set the owning side to null (unless already changed)
             if ($exercice->getGroupement() === $this) {
                 $exercice->setGroupement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Membre>
+     */
+    public function getMembres(): Collection
+    {
+        return $this->membres;
+    }
+
+    public function addMembre(Membre $membre): static
+    {
+        if (!$this->membres->contains($membre)) {
+            $this->membres->add($membre);
+            $membre->setGroupement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMembre(Membre $membre): static
+    {
+        if ($this->membres->removeElement($membre)) {
+            if ($membre->getGroupement() === $this) {
+                $membre->setGroupement(null);
             }
         }
 
