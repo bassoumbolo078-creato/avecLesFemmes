@@ -44,6 +44,7 @@ class GroupementService
                 $groupement->getTel(),
                 $groupement->getAdresse(),
                 $groupement->getMembres()->count(),
+                $groupement->getExercices()->count(),
                 $exercice?->getDebutAt()?->format('d/m/Y'),
                 $exercice?->getFinAt()?->format('d/m/Y'),
                 $exercice?->getStatut()?->label(),
