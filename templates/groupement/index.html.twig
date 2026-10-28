@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Groupements{% endblock %}
+
+{% block body %}
+    <main style="max-width: 960px; margin: 2rem auto; font-family: sans-serif;">
+        <h1>Groupements</h1>
+
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid #ccc;">
+                    <th>Nom</th>
+                    <th>Téléphone</th>
+                    <th>Adresse</th>
+                    <th>Membres</th>
+                    <th>Exercice en cours</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for groupement in data_groupements %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td>{{ groupement.nom }}</td>
+                        <td>{{ groupement.tel }}</td>
+                        <td>{{ groupement.adresse ?? '—' }}</td>
+                        <td>{{ groupement.nombreMembres }}</td>
+                        <td>
+                            {% if groupement.exerciceDebut %}
+                                {{ groupement.exerciceDebut }} → {{ groupement.exerciceFin }}
+                                ({{ groupement.exerciceStatut }})
+                            {% else %}
+                                Aucun exercice en cours
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">Aucun groupement.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+{% endblock %}
