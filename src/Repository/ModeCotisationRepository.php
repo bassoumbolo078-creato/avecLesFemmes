@@ -15,4 +15,25 @@ class ModeCotisationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, ModeCotisation::class);
     }
+
+    /**
+     * Nombre de membres affectés à chaque campagne.
+     *
+     * @return array<int, int> id de la campagne => nombre de membres
+     */
+    public function compterParCampagne(): array
+    {
+        $lignes = $this->createQueryBuilder('mc')
+            ->select('IDENTITY(mc.campagne) AS campagneId, COUNT(mc.id) AS nombre')
+            ->groupBy('mc.campagne')
+            ->getQuery()
+            ->getArrayResult();
+
+        $nombres = [];
+        foreach ($lignes as $ligne) {
+            $nombres[(int) $ligne['campagneId']] = (int) $ligne['nombre'];
+        }
+
+        return $nombres;
+    }
 }
