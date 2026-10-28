@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ data_groupement.nom }}{% endblock %}
+
+{% block body %}
+    <main style="max-width: 960px; margin: 2rem auto; font-family: sans-serif;">
+        <p><a href="{{ path('app_groupement') }}">← Tous les groupements</a></p>
+
+        <h1>{{ data_groupement.nom }}</h1>
+        <p>
+            {{ data_groupement.tel }} — {{ data_groupement.adresse ?? 'Adresse non renseignée' }}<br>
+            {{ data_groupement.nombreMembres }} membres —
+            {% if data_groupement.exerciceDebut %}
+                Exercice en cours : {{ data_groupement.exerciceDebut }} → {{ data_groupement.exerciceFin }}
+                ({{ data_groupement.exerciceStatut }})
+            {% else %}
+                Aucun exercice en cours
+            {% endif %}
+        </p>
+
+        <h2>Campagnes</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid #ccc;">
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Périodicité</th>
+                    <th>Jour</th>
+                    <th>Montant</th>
+                    <th>Membres</th>
+                    <th>Exercice</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for campagne in data_groupement.campagnes %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td>{{ campagne.nom }}</td>
+                        <td>{{ campagne.type }}</td>
+                        <td>{{ campagne.periodicite ?? '—' }}</td>
+                        <td>{{ campagne.jourRencontre ?? '—' }}</td>
+                        <td>{{ campagne.montant|number_format(0, ',', ' ') }} F</td>
+                        <td>{{ campagne.nombreMembres }}</td>
+                        <td>{{ campagne.exercice }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">Aucune campagne.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+{% endblock %}

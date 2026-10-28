@@ -21,4 +21,17 @@ final class GroupementController extends AbstractController
             'data_groupements' => $this->groupementService->lister(),
         ]);
     }
+
+    #[Route('/groupement/{id}', name: 'app_groupement_detail', requirements: ['id' => '\d+'])]
+    public function detail(int $id): Response
+    {
+        $groupement = $this->groupementService->detail($id);
+        if (null === $groupement) {
+            throw $this->createNotFoundException('Groupement introuvable.');
+        }
+
+        return $this->render('groupement/detail.html.twig', [
+            'data_groupement' => $groupement,
+        ]);
+    }
 }
