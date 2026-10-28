@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Exercice;
+use App\Enum\StatutExercice;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,19 @@ class ExerciceRepository extends ServiceEntityRepository
         parent::__construct($registry, Exercice::class);
     }
 
-//    /**
-//     * @return Exercice[] Returns an array of Exercice objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('e.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Exercice
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * Les exercices en cours de tous les groupements (avec leur groupement, en une seule requête).
+     *
+     * @return Exercice[]
+     */
+    public function findEnCours(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->addSelect('g')
+            ->join('e.groupement', 'g')
+            ->andWhere('e.statut = :statut')
+            ->setParameter('statut', StatutExercice::ENCOURS)
+            ->getQuery()
+            ->getResult();
+    }
 }
