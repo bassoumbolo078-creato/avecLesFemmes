@@ -19,7 +19,7 @@
             <tbody>
                 {% for groupement in data_groupements %}
                     <tr style="border-bottom: 1px solid #eee;">
-                        <td>{{ groupement.nom }}</td>
+                        <td><a href="{{ path('app_groupement_detail', {id: groupement.id}) }}">{{ groupement.nom }}</a></td>
                         <td>{{ groupement.tel }}</td>
                         <td>{{ groupement.adresse ?? '—' }}</td>
                         <td>{{ groupement.nombreMembres }}</td>
