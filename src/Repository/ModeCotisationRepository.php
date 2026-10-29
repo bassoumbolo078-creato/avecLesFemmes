@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Campagne;
 use App\Entity\ModeCotisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -35,5 +36,22 @@ class ModeCotisationRepository extends ServiceEntityRepository
         }
 
         return $nombres;
+    }
+
+    /**
+     * Les affectations d'une campagne, avec leur membre, classées par nom.
+     *
+     * @return ModeCotisation[]
+     */
+    public function findByCampagne(Campagne $campagne): array
+    {
+        return $this->createQueryBuilder('mc')
+            ->addSelect('m')
+            ->join('mc.membre', 'm')
+            ->andWhere('mc.campagne = :campagne')
+            ->setParameter('campagne', $campagne)
+            ->orderBy('m.nomComplet', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

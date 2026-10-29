@@ -36,4 +36,20 @@ class CampagneRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Une campagne avec son exercice, son groupement et son type (une seule requête).
+     */
+    public function findDetail(int $id): ?Campagne
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('e', 'g', 't')
+            ->join('c.exercice', 'e')
+            ->join('e.groupement', 'g')
+            ->join('c.typeCampagne', 't')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
