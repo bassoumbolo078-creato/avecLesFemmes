@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ data_campagne.nom }} | Avec les femmes{% endblock %}
+
+{% block body %}
+<main class="contenu">
+  <a class="retour" href="{{ path('app_groupement_detail', {id: data_campagne.groupementId}) }}">{{ data_campagne.groupementNom }}</a>
+
+  <div class="tete-page">
+    <div>
+      <h1>{{ data_campagne.nom }}</h1>
+      <dl class="coordonnees">
+        <div>
+          <dt>Type</dt>
+          <dd>{{ data_campagne.type }}</dd>
+        </div>
+        <div>
+          <dt>Périodicité</dt>
+          <dd>{{ data_campagne.periodicite ?? '—' }}{% if data_campagne.jourRencontre %} ({{ data_campagne.jourRencontre }}){% endif %}</dd>
+        </div>
+        <div>
+          <dt>Cotisation</dt>
+          <dd>{{ data_campagne.montant|number_format(0, ',', ' ') }} F</dd>
+        </div>
+        <div>
+          <dt>Caisse sociale</dt>
+          <dd>présent {{ data_campagne.caissePresent|number_format(0, ',', ' ') }} F · absent représenté {{ data_campagne.caisseAbsent|number_format(0, ',', ' ') }} F</dd>
+        </div>
+        <div>
+          <dt>Amende par jour</dt>
+          <dd>{{ data_campagne.amendeJournaliere|number_format(0, ',', ' ') }} F</dd>
+        </div>
+        <div>
+          <dt>Période</dt>
+          <dd>Du {{ data_campagne.dateDebut }}{% if data_campagne.dateFin %} au {{ data_campagne.dateFin }}{% endif %}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <section class="panneau" aria-labelledby="titre-membres">
+    <div class="entete-panneau">
+      <h2 id="titre-membres">Membres ({{ data_campagne.membres|length }})</h2>
+    </div>
+    <div class="defilement">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Membre</th>
+            <th scope="col">Mode de cotisation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for membre in data_campagne.membres %}
+          <tr>
+            <td>{{ membre.nomComplet }}</td>
+            <td>{{ membre.mode }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="2">Aucune membre dans cette campagne.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panneau" aria-labelledby="titre-seances">
+    <div class="entete-panneau">
+      <h2 id="titre-seances">Séances ({{ data_campagne.seances|length }})</h2>
+    </div>
+    <div class="defilement">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col" class="nombre">Total collecté</th>
+            <th scope="col" class="nombre">Caisse sociale</th>
+            <th scope="col" class="nombre">Amendes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for seance in data_campagne.seances %}
+          <tr>
+            <td>{{ seance.date }}</td>
+            <td class="nombre">{{ seance.totalCollecte|number_format(0, ',', ' ') }} F</td>
+            <td class="nombre">{{ seance.totalCaisse|number_format(0, ',', ' ') }} F</td>
+            <td class="nombre">{{ seance.totalAmendes|number_format(0, ',', ' ') }} F</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4">Aucune séance.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}
