@@ -3,12 +3,14 @@
 namespace App\Dto;
 
 /**
- * Détail d'un groupement : ses informations, son exercice en cours et toutes ses campagnes.
+ * Fiche d'un groupement : ses informations, son exercice en cours,
+ * l'historique de ses exercices et toutes ses campagnes.
  */
 final readonly class GroupementDetailDto
 {
     /**
-     * @param CampagneDto[] $campagnes
+     * @param ExerciceHistoriqueDto[] $historique
+     * @param CampagneDto[]           $campagnes
      */
     public function __construct(
         public int $id,
@@ -16,9 +18,8 @@ final readonly class GroupementDetailDto
         public string $tel,
         public ?string $adresse,
         public int $nombreMembres,
-        public ?string $exerciceDebut,
-        public ?string $exerciceFin,
-        public ?string $exerciceStatut,
+        public ?ExerciceEnCoursDto $exerciceEnCours,
+        public array $historique,
         public array $campagnes,
     ) {
     }
